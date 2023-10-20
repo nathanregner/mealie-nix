@@ -20,7 +20,7 @@
 
     poetry2nix = {
       url = "github:nix-community/poetry2nix";
-      # inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
@@ -86,10 +86,28 @@
         dontFixup = true;
       };
 
+      backend-manual = pkgs.python3Packages.buildPythonPackage rec {
+        pname = "pyFFTW";
+        version = "0.9.2";
+        format = "setuptools";
+
+        src = mealie;
+
+        buildInputs = [ pkgs.fftw pkgs.fftwFloat pkgs.fftwLongDouble ];
+
+        propagatedBuildInputs = with pkgs.python3Packages; [ numpy scipy ];
+
+        # Tests cannot import pyfftw. pyfftw works fine though.
+        doCheck = false;
+      };
+
       # TODO: multiple systems
       # https://github.com/nix-community/poetry2nix#how-to-guides
       backend = let
         pypkgs-build-requirements = {
+          apprise = [
+            "babel" # fixes a timeout when running setuptools... why does this work?
+          ];
           html-text = [ "setuptools" ];
           jstyleson = [ "setuptools" ];
           mf2py = [ "setuptools" ];
@@ -99,37 +117,29 @@
         };
       in (p2n.mkPoetryApplication {
         projectDir = mealie;
-        python = pkgs.python311;
-        # groups = [ ];
-        # extras = [ ];
-        installPhase = ''
-          echo 'hello';
-        '';
+        # installPhase = ''
+        #   echo 'hello';
+        # '';
         overrides = p2n.defaultPoetryOverrides.extend (self: super:
-          {
-            inherit (pkgs.python311Packages)
-            # #   apprise extruct mkdocs-material recipe-scrapers requests fastapi
-            #   apprise 
-              mkdocs-material mypy extruct recipes-scrapers
-              #
-              isodate urllib3;
+          let
+            dummy = super.buildPythonPackage rec {
+              pname = "dummy";
+              version = "0.0.0";
+              dontUnpack = true;
+              doCheck = false;
+              format = "other";
+            };
+          in {
+            # exclude problematic dev-only dependencies
+            coveragepy-lcov = dummy; # test coverage
+            mkdocs-material = dummy; # static doc generation
+            ruff = dummy; # linter
 
-            pyyaml = pkgs.python311Packages.pyyaml.overridePythonAttrs
-              (prev: rec {
-                version = "6.0.1";
-
-                src = pkgs.fetchFromGitHub {
-                  owner = "yaml";
-                  repo = "pyyaml";
-                  rev = version;
-                  hash = "sha256-YjWMyMVDByLsN5vEecaYjHpR1sbBey1L/khn4oH9SPA=";
-                };
-              });
-
-            # alias problematic packages that we're not going to use during build anyway
-            # TODO: Find a way to exclude these
-            ruff = pkgs.python311Packages.apprise; # linter
-            coveragepy-lcov = pkgs.python311Packages.apprise;
+            pyrdfa3 = super.pyrdfa3.overrideAttrs (old: {
+              # this package is dead
+              # steal nixpkgs patches that fix the build
+              inherit (pkgs.python310Packages.pyrdfa3) patches postPatch;
+            });
           } // builtins.mapAttrs (package: build-requirements:
             (builtins.getAttr package super).overridePythonAttrs (old: {
               buildInputs = (old.buildInputs or [ ]) ++ (builtins.map (pkg:

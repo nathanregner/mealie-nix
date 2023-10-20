@@ -37,11 +37,11 @@
     "mealie": {
       "flake": false,
       "locked": {
-        "lastModified": 1697638734,
-        "narHash": "sha256-qcKUxZZlM8FJlpd9gNf1tJNk6b+QDUkVhQ3UFQbU8f0=",
+        "lastModified": 1697821624,
+        "narHash": "sha256-HoBylSBQAd117c0DlbN/GHQR4DKG340P3p2Y43j6qkM=",
         "owner": "mealie-recipes",
         "repo": "mealie",
-        "rev": "13f0fcb082be6e8f288ea75a0cfcb45684a98e69",
+        "rev": "14cc44f94848bcc1b44eadc648853bd87b9b004b",
         "type": "github"
       },
       "original": {
@@ -88,27 +88,13 @@
         "type": "github"
       }
     },
-    "nixpkgs_2": {
-      "locked": {
-        "lastModified": 1689192006,
-        "narHash": "sha256-QM0f0d8oPphOTYJebsHioR9+FzJcy1QNIzREyubB91U=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "2de8efefb6ce7f5e4e75bdf57376a96555986841",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixos-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "poetry2nix": {
       "inputs": {
         "flake-utils": "flake-utils",
         "nix-github-actions": "nix-github-actions",
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": [
+          "nixpkgs"
+        ]
       },
       "locked": {
         "lastModified": 1697447667,
