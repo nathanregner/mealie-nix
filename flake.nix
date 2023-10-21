@@ -32,5 +32,17 @@
       };
 
       nixosModules.default = ./nixosModules;
+
+      formatters = { lib }: { "*.nix" = lib.mkForce "nixfmt"; };
+      devShells.default = { pkgs }:
+        pkgs.mkShell { packages = with pkgs; [ nixfmt ]; };
+
+      checks.vm = { inputs, inputs', outputs, outputs', pkgs, lib, ... }:
+        let nixos-lib = import (inputs.nixpkgs + "/nixos/lib") { };
+        in nixos-lib.runTest {
+          imports = [ ./vm.nix ];
+          hostPkgs = pkgs;
+          node.specialArgs = { inherit outputs outputs'; };
+        };
     };
 }

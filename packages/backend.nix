@@ -3,6 +3,14 @@ mkPoetryApplication {
   inherit (mealie) version meta;
   projectDir = mealie.src;
 
+  # point Alembic paths at site-package location
+  # otherwise default, it assumes it has access to the full source tree and lives in the `mealie` folder
+  patches = [ ./alembic-migration-paths.patch ];
+  postFixup = ''
+    cp -r $src/alembic $out/lib/python3.10/site-packages/mealie
+    cp -r $src/alembic.ini $out/lib/python3.10/site-packages/mealie
+  '';
+
   overrides = defaultPoetryOverrides.extend (self: super:
     (let
       dummy = super.buildPythonPackage {
@@ -42,3 +50,4 @@ mkPoetryApplication {
           build-requirements);
       })) pypkgs-build-requirements));
 }
+

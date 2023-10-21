@@ -18,7 +18,9 @@ in runCommand "mealie-nightly" {
   inherit (mealie) version meta;
   passthru = { inherit frontend backend; };
 } ''
-  mkdir -p $out/spa
+  mkdir -p $out
   cp -r ${backend.dependencyEnv}/* $out
+
+  mkdir -p $out/spa
   ln -s ${frontend} $out/spa/static
 ''

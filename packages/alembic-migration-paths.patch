@@ -1,0 +1,39 @@
+diff --git a/alembic.ini b/alembic.ini
+index 25c809d1..6bd81164 100644
+--- a/alembic.ini
++++ b/alembic.ini
+@@ -2,7 +2,7 @@
+ 
+ [alembic]
+ # path to migration scripts
+-script_location = alembic
++script_location = mealie:alembic
+ 
+ # template used to generate migration files
+ file_template = %%(year)d-%%(month).2d-%%(day).2d-%%(hour).2d.%%(minute).2d.%%(second).2d_%%(rev)s_%%(slug)s
+diff --git a/mealie/db/init_db.py b/mealie/db/init_db.py
+index 90dd91a8..c20e8dc5 100644
+--- a/mealie/db/init_db.py
++++ b/mealie/db/init_db.py
+@@ -17,7 +17,12 @@ from mealie.repos.seed.init_users import default_user_init
+ from mealie.schema.user.user import GroupBase
+ from mealie.services.group_services.group_service import GroupService
+ 
+-PROJECT_DIR = Path(__file__).parent.parent.parent
++import os
++import mealie
++
++PROJECT_DIR = Path(os.path.dirname(mealie.__file__))
++print("PROJECT_DIR is ")
++print(PROJECT_DIR)
+ 
+ logger = root_logger.get_logger("init_db")
+ 
+@@ -86,6 +91,7 @@ def main():
+                 raise ConnectionError("Database connection failed - exiting application.")
+ 
+         alembic_cfg = Config(str(PROJECT_DIR / "alembic.ini"))
++        alembic_cfg.set_main_option("script_location", str(PROJECT_DIR / "alembic"))
+         if db_is_at_head(alembic_cfg):
+             logger.debug("Migration not needed.")
+         else:
