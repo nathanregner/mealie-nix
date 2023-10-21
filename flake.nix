@@ -7,6 +7,10 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
     flake-parts.url = "github:hercules-ci/flake-parts";
+    flakelight = {
+      url = "github:accelbread/flakelight";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     mealie = {
       url = "github:mealie-recipes/mealie?ref=mealie-next";
@@ -19,26 +23,21 @@
     };
   };
 
-  outputs = inputs@{ flake-parts, ... }:
-    flake-parts.lib.mkFlake { inherit inputs; } {
-      imports = [
-        # To import a flake module
-        # 1. Add foo to inputs
-        # 2. Add foo as a parameter to the outputs function
-        # 3. Add here: foo.flakeModule
-      ];
-      systems =
-        [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
-      perSystem = { config, self', inputs', pkgs, system, ... }: rec {
-        packages.default = pkgs.callPackage ./pkgs { inherit inputs system; };
+  outputs = inputs@{ flakelight, ... }:
+    flakelight ./. {
+      inherit inputs;
 
-        nixosModules.default =
-          import ./modules/nginx.nix { mealie-nightly = packages.default; };
+      packages = rec {
+        mealie = import ./packages/mealie.nix;
+        default = mealie;
       };
-      flake = {
-        # The usual flake attributes can be defined here, including system-
-        # agnostic ones like nixosModule and system-enumerating ones, although
-        # those are more easily expressed in perSystem.
-      };
+
+      # packages = rec {
+      #   mealie-nightly = { callPackage }:
+      #     callPackage ./pkgs { inherit inputs; };
+      #   default = mealie-nightly;
+      # };
+
+      # nixosModules.default = args: ./modules/_default.nix;
     };
 }

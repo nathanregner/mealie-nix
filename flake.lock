@@ -36,6 +36,26 @@
         "type": "github"
       }
     },
+    "flakelight": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1697684656,
+        "narHash": "sha256-bFiFvgpA4D90AUZPIZrUxZhnoPxsAKGmjdjQ5CVLQa8=",
+        "owner": "accelbread",
+        "repo": "flakelight",
+        "rev": "e401f680302d4f9c353f4f08744bc69a1f903557",
+        "type": "github"
+      },
+      "original": {
+        "owner": "accelbread",
+        "repo": "flakelight",
+        "type": "github"
+      }
+    },
     "mealie": {
       "flake": false,
       "locked": {
@@ -133,6 +153,7 @@
     "root": {
       "inputs": {
         "flake-parts": "flake-parts",
+        "flakelight": "flakelight",
         "mealie": "mealie",
         "nixpkgs": "nixpkgs",
         "poetry2nix": "poetry2nix"

@@ -1,4 +1,4 @@
-{ config, lib, modulesPath, mealie-nightly, ... }:
+{ outputs, config, lib, modulesPath, pkgs, ... }:
 with lib;
 let cfg = config.services.mealie;
 in {
@@ -9,7 +9,7 @@ in {
     package = mkOption {
       type = types.package;
       description = lib.mdDoc "Mealie package to be used in the module";
-      default = mealie-nightly;
+      default = pkgs.mealie;
     };
 
     stateDir = mkOption {
@@ -71,20 +71,13 @@ in {
       mealie = {
         group = cfg.group;
         isSystemUser = true;
-        # TODO
-        # uid = config.ids.uids.mealie;
       };
     };
 
-    users.groups = optionalAttrs (cfg.group == "mealie") {
-      # TODO
-      # mealie.gid = config.ids.gids.mealie;
-    };
+    users.groups = optionalAttrs (cfg.group == "mealie") { mealie = { }; };
 
     systemd.tmpfiles.rules =
-      [ "d '${cfg.stateDir}' - ${cfg.user} ${cfg.group} - -" ]
-      ++ lib.optional (cfg.configDir != null)
-      "d '${cfg.configDir}' - ${cfg.user} ${cfg.group} - -";
+      [ "d '${cfg.stateDir}' - ${cfg.user} ${cfg.group} - -" ];
 
     systemd.services.mealie = {
       description = "Moonraker, an API web server for Klipper";
@@ -92,10 +85,16 @@ in {
       after = [ "network.target" ]
         ++ optional config.services.klipper.enable "klipper.service";
 
-      environment = { DATA_DIR = cfg.stateDir; };
+      environment = {
+        DATA_DIR = cfg.stateDir;
+        PRODUCTION = "True";
+        STATIC_FILES = "${cfg.package}/spa/static";
+      };
 
       script = ''
-        exec ${cfg.package}/backend/bin/start
+        ${cfg.package}/bin/uvicorn mealie.app:app --host ${cfg.address} --port ${
+          toString cfg.port
+        }
       '';
 
       serviceConfig = {

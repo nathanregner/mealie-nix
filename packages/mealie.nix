@@ -1,4 +1,5 @@
-{ inputs, system, lib, callPackage, runCommand }:
+{ inputs, system, lib, callPackage, runCommand, writeShellApplication
+, python311Packages }:
 let
   mealie = {
     src = inputs.mealie;
@@ -11,6 +12,7 @@ let
   frontend = callPackage ./frontend.nix { inherit mealie; };
   backend = callPackage ./backend.nix {
     inherit mealie;
+    # TODO: use inputs' instead...
     inherit (inputs.poetry2nix.legacyPackages.${system})
       mkPoetryApplication defaultPoetryOverrides;
   };
@@ -18,7 +20,7 @@ in runCommand "mealie-nightly" {
   inherit (mealie) version meta;
   passthru = { inherit frontend backend; };
 } ''
-  mkdir $out
-  ln -s ${backend} $out/backend
-  ln -s ${frontend} $out/frontend
+  mkdir -p $out/spa
+  cp -r ${backend.dependencyEnv}/* $out
+  ln -s ${frontend} $out/spa/static
 ''
