@@ -1,9 +1,8 @@
-{ src, poetry2nix, callPackage, mkPoetryApplication, defaultPoetryOverrides
+{ mealie, poetry2nix, mkPoetryApplication, defaultPoetryOverrides
 , python310Packages, ... }:
-let common = callPackage ./common.nix { inherit src; };
-in (mkPoetryApplication {
-  inherit (common) version meta;
-  projectDir = src;
+mkPoetryApplication {
+  inherit (mealie) version meta;
+  projectDir = mealie.src;
 
   overrides = defaultPoetryOverrides.extend (self: super:
     (let
@@ -44,4 +43,4 @@ in (mkPoetryApplication {
           if builtins.isString pkg then builtins.getAttr pkg super else pkg)
           build-requirements);
       })) pypkgs-build-requirements));
-})
+}

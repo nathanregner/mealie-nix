@@ -30,15 +30,7 @@
       systems =
         [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
       perSystem = { config, self', inputs', pkgs, system, ... }: {
-        packages = let src = inputs.mealie;
-        in {
-          frontend = pkgs.callPackage ./pkgs/frontend.nix { inherit src; };
-          backend = pkgs.callPackage ./pkgs/backend.nix {
-            inherit src;
-            inherit (inputs.poetry2nix.legacyPackages.${system})
-              mkPoetryApplication defaultPoetryOverrides;
-          };
-        };
+        packages.default = pkgs.callPackage ./pkgs { inherit inputs system; };
       };
       flake = {
         # The usual flake attributes can be defined here, including system-

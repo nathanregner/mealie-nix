@@ -1,9 +1,8 @@
-{ src, yarn2nix-moretea, callPackage, ... }:
-let common = callPackage ./common.nix { inherit src; };
-in yarn2nix-moretea.mkYarnPackage {
-  inherit (common) version meta;
+{ mealie, yarn2nix-moretea, ... }:
+yarn2nix-moretea.mkYarnPackage {
+  inherit (mealie) version meta;
   pname = "mealie-nightly-frontend";
-  src = "${src}/frontend";
+  src = "${mealie.src}/frontend";
 
   configurePhase = ''
     runHook preConfigure
