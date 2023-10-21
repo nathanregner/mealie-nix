@@ -6,7 +6,6 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
-    flake-parts.url = "github:hercules-ci/flake-parts";
     flakelight = {
       url = "github:accelbread/flakelight";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -32,12 +31,6 @@
         default = mealie;
       };
 
-      # packages = rec {
-      #   mealie-nightly = { callPackage }:
-      #     callPackage ./pkgs { inherit inputs; };
-      #   default = mealie-nightly;
-      # };
-
-      # nixosModules.default = args: ./modules/_default.nix;
+      nixosModules.default = ./nixosModules;
     };
 }

@@ -1,5 +1,4 @@
-{ inputs, system, lib, callPackage, runCommand, writeShellApplication
-, python311Packages }:
+{ inputs, system, lib, callPackage, runCommand }:
 let
   mealie = {
     src = inputs.mealie;
@@ -12,7 +11,6 @@ let
   frontend = callPackage ./frontend.nix { inherit mealie; };
   backend = callPackage ./backend.nix {
     inherit mealie;
-    # TODO: use inputs' instead...
     inherit (inputs.poetry2nix.legacyPackages.${system})
       mkPoetryApplication defaultPoetryOverrides;
   };

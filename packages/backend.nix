@@ -1,5 +1,4 @@
-{ mealie, poetry2nix, mkPoetryApplication, defaultPoetryOverrides
-, python310Packages, ... }:
+{ mealie, mkPoetryApplication, defaultPoetryOverrides, python310Packages, ... }:
 mkPoetryApplication {
   inherit (mealie) version meta;
   projectDir = mealie.src;
@@ -22,7 +21,6 @@ mkPoetryApplication {
       pyrdfa3 = super.pyrdfa3.overrideAttrs (old: {
         # this package is dead
         # steal nixpkgs patches that fix the build
-        # TODO: Don't hard-code python version?
         inherit (python310Packages.pyrdfa3) patches postPatch;
       });
     }) // (let
