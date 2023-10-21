@@ -29,14 +29,16 @@
       ];
       systems =
         [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
-      perSystem = { config, self', inputs', pkgs, system, ... }: {
+      perSystem = { config, self', inputs', pkgs, system, ... }: rec {
         packages.default = pkgs.callPackage ./pkgs { inherit inputs system; };
+
+        nixosModules.default =
+          import ./modules/nginx.nix { mealie-nightly = packages.default; };
       };
       flake = {
         # The usual flake attributes can be defined here, including system-
         # agnostic ones like nixosModule and system-enumerating ones, although
         # those are more easily expressed in perSystem.
-
       };
     };
 }
