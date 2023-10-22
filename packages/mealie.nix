@@ -1,4 +1,4 @@
-{ inputs, system, lib, callPackage, runCommand }:
+{ inputs, system, lib, callPackage, writeShellApplication, }:
 let
   mealie = {
     src = inputs.mealie;
@@ -14,13 +14,17 @@ let
     inherit (inputs.poetry2nix.legacyPackages.${system})
       mkPoetryApplication defaultPoetryOverrides;
   };
-in runCommand "mealie-nightly" {
-  inherit (mealie) version meta;
-  passthru = { inherit frontend backend; };
-} ''
-  mkdir -p $out
-  cp -r ${backend.dependencyEnv}/* $out
 
-  mkdir -p $out/spa
-  ln -s ${frontend} $out/spa/static
-''
+in (writeShellApplication {
+  name = "start";
+
+  runtimeInputs = [ backend.dependencyEnv ];
+
+  text = ''
+    python -m mealie.db.init_db
+
+    STATIC_FILES="${frontend}" \
+    uvicorn mealie.app:app "$@"
+  '';
+}).overrideAttrs { passthru = { inherit frontend backend; }; }
+

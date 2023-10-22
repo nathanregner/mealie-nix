@@ -65,12 +65,10 @@ in {
       environment = {
         DATA_DIR = cfg.stateDir;
         PRODUCTION = "True";
-        STATIC_FILES = "${cfg.package}/spa/static";
       };
 
       script = ''
-        ${cfg.package}/bin/python -m mealie.db.init_db
-        ${cfg.package}/bin/uvicorn mealie.app:app --host ${cfg.address} --port ${
+        ${cfg.package}/bin/start --host ${cfg.address} --port ${
           toString cfg.port
         }
       '';

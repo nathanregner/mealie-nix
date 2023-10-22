@@ -1,14 +1,28 @@
-{ mealie, mkPoetryApplication, defaultPoetryOverrides, python310Packages, ... }:
-mkPoetryApplication {
+{ mealie, mkPoetryApplication, defaultPoetryOverrides, python310Packages
+, fetchurl, ... }:
+let
+  crfModel = (fetchurl {
+    url =
+      "https://github.com/mealie-recipes/nlp-model/releases/download/v1.0.0/model.crfmodel";
+    hash = "sha256-1JLuijMC9uFZvWwhpErASYO2q1kig6zwBbCidPEvdmc=";
+  });
+in mkPoetryApplication {
   inherit (mealie) version meta;
   projectDir = mealie.src;
 
-  # point Alembic paths at site-package location
-  # otherwise default, it assumes it has access to the full source tree and lives in the `mealie` folder
-  patches = [ ./alembic-migration-paths.patch ];
-  postFixup = ''
-    cp -r $src/alembic $out/lib/python3.10/site-packages/mealie
-    cp -r $src/alembic.ini $out/lib/python3.10/site-packages/mealie
+  patches = [
+    # patch alembic paths so DB migrations are runnable from the site-package installation
+    ./alembic-migration-paths.patch
+    # make sure we're including a working version of tesseract
+    ./enable-ocr-unit-tests.patch
+  ];
+  postPatch = ''
+    cp -r ./alembic ./mealie
+    cp ./alembic.ini ./mealie/alembic.ini
+  '';
+
+  checkPhase = ''
+    pytest --verbose
   '';
 
   overrides = defaultPoetryOverrides.extend (self: super:
@@ -30,6 +44,13 @@ mkPoetryApplication {
         # this package is dead
         # steal nixpkgs patches that fix the build
         inherit (python310Packages.pyrdfa3) patches postPatch;
+      });
+
+      pytesseract = super.pytesseract.overrideAttrs (old: {
+        # steal nixpkgs patches that include the tesseract package
+        inherit (python310Packages.pytesseract) patches;
+        buildInputs = old.buildInputs
+          ++ python310Packages.pytesseract.buildInputs;
       });
     }) // (let
       pypkgs-build-requirements = {
