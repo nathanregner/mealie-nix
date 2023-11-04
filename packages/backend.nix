@@ -1,11 +1,5 @@
-{ mealie, mkPoetryApplication, defaultPoetryOverrides, python310Packages
-, fetchurl, ... }:
-let
-  crfModel = (fetchurl {
-    url =
-      "https://github.com/mealie-recipes/nlp-model/releases/download/v1.0.0/model.crfmodel";
-    hash = "sha256-1JLuijMC9uFZvWwhpErASYO2q1kig6zwBbCidPEvdmc=";
-  });
+{ mealie, poetry2nix, python310Packages, fetchurl, ... }:
+let inherit (poetry2nix) mkPoetryApplication defaultPoetryOverrides;
 in mkPoetryApplication {
   inherit (mealie) version meta;
   projectDir = mealie.src;
@@ -39,6 +33,9 @@ in mkPoetryApplication {
       coveragepy-lcov = dummy; # test coverage
       mkdocs-material = dummy; # static doc generation
       ruff = dummy; # linter
+      mypy = dummy; # type checker
+
+      orjson = python310Packages.orjson;
 
       pyrdfa3 = super.pyrdfa3.overrideAttrs (old: {
         # this package is dead
@@ -63,6 +60,7 @@ in mkPoetryApplication {
         pydantic-to-typescript = [ "setuptools" ];
         recipe-scrapers = [ "setuptools-scm" ];
         types-python-slugify = [ "setuptools" ];
+        beautifulsoup4 = [ "hatchling" ];
       };
     in builtins.mapAttrs (package: build-requirements:
       (builtins.getAttr package super).overridePythonAttrs (old: {

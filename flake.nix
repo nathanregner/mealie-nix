@@ -15,11 +15,6 @@
       url = "github:mealie-recipes/mealie?ref=mealie-next";
       flake = false;
     };
-
-    poetry2nix = {
-      url = "github:nix-community/poetry2nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = inputs@{ flakelight, ... }:
@@ -33,7 +28,7 @@
 
       nixosModules.default = ./nixosModules;
 
-      formatters = { lib }: { "*.nix" = lib.mkForce "nixfmt"; };
+      formatters = { "*.nix" = "nixfmt"; };
       devShells.default = { pkgs }:
         pkgs.mkShell { packages = with pkgs; [ nixfmt ]; };
 

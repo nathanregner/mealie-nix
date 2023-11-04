@@ -9,12 +9,7 @@ let
     };
   };
   frontend = callPackage ./frontend.nix { inherit mealie; };
-  backend = callPackage ./backend.nix {
-    inherit mealie;
-    inherit (inputs.poetry2nix.legacyPackages.${system})
-      mkPoetryApplication defaultPoetryOverrides;
-  };
-
+  backend = callPackage ./backend.nix { inherit mealie; };
 in (writeShellApplication {
   name = "start";
 
