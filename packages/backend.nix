@@ -1,5 +1,8 @@
-{ mealie, poetry2nix, python310Packages, fetchurl, ... }:
-let inherit (poetry2nix) mkPoetryApplication defaultPoetryOverrides;
+{ inputs, mealie, python311Packages, pkgs, ... }:
+let
+  inherit (inputs.poetry2nix.lib.mkPoetry2Nix { inherit pkgs; })
+    mkPoetryApplication defaultPoetryOverrides;
+
 in mkPoetryApplication {
   inherit (mealie) version meta;
   projectDir = mealie.src;
@@ -35,19 +38,17 @@ in mkPoetryApplication {
       ruff = dummy; # linter
       mypy = dummy; # type checker
 
-      orjson = python310Packages.orjson;
-
       pyrdfa3 = super.pyrdfa3.overrideAttrs (old: {
         # this package is dead
         # steal nixpkgs patches that fix the build
-        inherit (python310Packages.pyrdfa3) patches postPatch;
+        inherit (python311Packages.pyrdfa3) patches postPatch;
       });
 
       pytesseract = super.pytesseract.overrideAttrs (old: {
         # steal nixpkgs patches that include the tesseract package
-        inherit (python310Packages.pytesseract) patches;
+        inherit (python311Packages.pytesseract) patches;
         buildInputs = old.buildInputs
-          ++ python310Packages.pytesseract.buildInputs;
+          ++ python311Packages.pytesseract.buildInputs;
       });
     }) // (let
       pypkgs-build-requirements = {

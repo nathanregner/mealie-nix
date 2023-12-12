@@ -5,7 +5,7 @@
   '';
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
     flakelight = {
       url = "github:accelbread/flakelight";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -15,9 +15,13 @@
       url = "github:mealie-recipes/mealie?ref=mealie-next";
       flake = false;
     };
+    poetry2nix = {
+      url = "github:nix-community/poetry2nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ flakelight, ... }:
+  outputs = inputs@{ flakelight, nixpkgs, ... }:
     flakelight ./. {
       inherit inputs;
 
@@ -28,7 +32,8 @@
 
       nixosModules.default = ./nixosModules;
 
-      formatters = { "*.nix" = "nixfmt"; };
+      formatters = { "*.nix" = nixpkgs.lib.mkForce "nixfmt"; };
+
       devShells.default = { pkgs }:
         pkgs.mkShell { packages = with pkgs; [ nixfmt ]; };
 

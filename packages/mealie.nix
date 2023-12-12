@@ -1,4 +1,4 @@
-{ inputs, system, lib, callPackage, writeShellApplication, }:
+{ inputs, lib, callPackage, writeShellApplication, }:
 let
   mealie = {
     src = inputs.mealie;
