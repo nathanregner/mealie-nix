@@ -21,5 +21,7 @@ in (writeShellApplication {
     STATIC_FILES="${frontend}" \
     uvicorn mealie.app:app "$@"
   '';
-}).overrideAttrs { passthru = { inherit frontend backend; }; }
+}) // {
+  passthru = { inherit frontend backend; };
+}
 

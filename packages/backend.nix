@@ -10,8 +10,6 @@ in mkPoetryApplication {
   patches = [
     # patch alembic paths so DB migrations are runnable from the site-package installation
     ./alembic-migration-paths.patch
-    # make sure we're including a working version of tesseract
-    ./enable-ocr-unit-tests.patch
   ];
   postPatch = ''
     cp -r ./alembic ./mealie
