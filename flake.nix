@@ -6,6 +6,10 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
+    nix-github-actions = {
+      url = "github:nix-community/nix-github-actions";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     flakelight = {
       url = "github:accelbread/flakelight";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -21,14 +25,11 @@
     };
   };
 
-  outputs = inputs@{ flakelight, nixpkgs, ... }:
+  outputs = inputs@{ self, flakelight, nixpkgs, ... }:
     flakelight ./. {
       inherit inputs;
 
-      packages = rec {
-        mealie = import ./packages/mealie.nix;
-        default = mealie;
-      };
+      packages.mealie = import ./packages/mealie.nix;
 
       nixosModules.default = ./nixosModules;
 
@@ -44,5 +45,13 @@
           hostPkgs = pkgs;
           node.specialArgs = { inherit outputs outputs'; };
         };
+
+      outputs = {
+        githubActions = inputs.nix-github-actions.lib.mkGithubMatrix {
+          checks.x86_64-linux = {
+            inherit (self.checks.x86_64-linux) formatting vm;
+          };
+        };
+      };
     };
 }

@@ -25,11 +25,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1705197871,
-        "narHash": "sha256-cpv1n249rFzunW8pc/yP1Tj23kuOG+fn2v4jnmArI5E=",
+        "lastModified": 1707299369,
+        "narHash": "sha256-sxSw0Rhi3tnLDQwSeLGy9UiJ6T2LbYNaqkIiRTjDDpg=",
         "owner": "accelbread",
         "repo": "flakelight",
-        "rev": "1b51df0be3b1498ef04c9a4f6a3bd038359e4254",
+        "rev": "a50fbcba1a6e2a27279aafe1a22249bb4644be3b",
         "type": "github"
       },
       "original": {
@@ -56,6 +56,26 @@
       }
     },
     "nix-github-actions": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1703863825,
+        "narHash": "sha256-rXwqjtwiGKJheXB43ybM8NwWB8rO2dSRrEqes0S7F5Y=",
+        "owner": "nix-community",
+        "repo": "nix-github-actions",
+        "rev": "5163432afc817cf8bd1f031418d1869e4c9d5547",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nix-github-actions",
+        "type": "github"
+      }
+    },
+    "nix-github-actions_2": {
       "inputs": {
         "nixpkgs": [
           "poetry2nix",
@@ -95,7 +115,7 @@
     "poetry2nix": {
       "inputs": {
         "flake-utils": "flake-utils",
-        "nix-github-actions": "nix-github-actions",
+        "nix-github-actions": "nix-github-actions_2",
         "nixpkgs": [
           "nixpkgs"
         ],
@@ -120,6 +140,7 @@
       "inputs": {
         "flakelight": "flakelight",
         "mealie": "mealie",
+        "nix-github-actions": "nix-github-actions",
         "nixpkgs": "nixpkgs",
         "poetry2nix": "poetry2nix"
       }

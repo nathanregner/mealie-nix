@@ -1,7 +1,7 @@
 {
   name = "service-startup";
 
-  nodes.machine = { outputs, outputs', pkgs, lib, ... }: {
+  nodes.machine = { outputs, pkgs, lib, ... }: {
     imports = [ outputs.nixosModules.default ];
     nixpkgs.overlays = [ outputs.overlays.default ];
     services.mealie.enable = true;
