@@ -29,6 +29,25 @@ Enable the service in your nixosConfiguration:
   nixpkgs.overlays = [ inputs.mealie.overlays.default ];
 
   # alternatively, specify the package explicitly:
-  # services.mealie.package = inputs.mealie.packages.default;
+  # services.mealie.package = inputs.mealie.packages.mealie;
+}
+```
+
+Optionally, enable use of the publicly available [Cachix binary
+cache](https://app.cachix.org/cache/nathanregner-mealie-nix):
+
+```nix
+{ ... }: {
+  nix = {
+    settings = {
+      substituters = [
+        "https://nathanregner-mealie-nix.cachix.org"
+      ];
+
+      trusted-public-keys = [
+        "nathanregner-mealie-nix.cachix.org-1:Ir3Z9UXjCcKwULpHZ8BveGbg7Az7edKLs4RPlrM1USM="
+      ];
+    };
+  };
 }
 ```
