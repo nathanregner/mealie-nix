@@ -1,5 +1,5 @@
-{ mealie, yarn2nix-moretea, ... }:
-yarn2nix-moretea.mkYarnPackage {
+{ mealie, mkYarnPackage, ... }:
+mkYarnPackage {
   inherit (mealie) version meta;
   pname = "mealie-nightly-frontend";
   src = "${mealie.src}/frontend";
