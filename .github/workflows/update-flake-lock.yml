@@ -1,4 +1,5 @@
-name: update-flake-lock
+name: Update flake.lock
+
 on:
   workflow_dispatch: # allows manual triggering
   schedule:
@@ -8,15 +9,12 @@ jobs:
   lockfile:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Install Nix
-        uses: DeterminateSystems/v9
-      - name: Update flake.lock
-        uses: DeterminateSystems/v20
+      - uses: actions/checkout@v3
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - uses: DeterminateSystems/update-flake-lock@main
         with:
           pr-title: "build: update flake.lock" # Title of PR to be created
           pr-labels: | # Labels to be set on the PR
             dependencies
             automated
-          token: ${{ secrets.GH_TOKEN_FOR_UPDATES }}
