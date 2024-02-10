@@ -36,7 +36,12 @@
       formatters = { "*.nix" = nixpkgs.lib.mkForce "nixfmt"; };
 
       devShells.default = { pkgs }:
-        pkgs.mkShell { packages = with pkgs; [ nixfmt ]; };
+        pkgs.mkShell {
+          packages = with pkgs; [
+            nixfmt
+            (pkgs.callPackage ./packages/shell/pin-github-action.nix { })
+          ];
+        };
 
       checks.vm = { inputs, inputs', outputs, outputs', pkgs, lib, ... }:
         let nixos-lib = import (inputs.nixpkgs + "/nixos/lib") { };

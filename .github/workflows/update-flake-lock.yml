@@ -9,12 +9,12 @@ jobs:
   lockfile:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: DeterminateSystems/nix-installer-action@main
-      - uses: DeterminateSystems/magic-nix-cache-action@main
-      - uses: DeterminateSystems/update-flake-lock@main
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # pin@main
+      - uses: DeterminateSystems/nix-installer-action@e279ba56d8266c08a0e65738145aabb824f308ed # pin@main
+      - uses: DeterminateSystems/magic-nix-cache-action@eeabdb06718ac63a7021c6132129679a8e22d0c7 # pin@main
+      - uses: DeterminateSystems/update-flake-lock@e98d4358e3df113dd7e32f9909386003a5fd1a23 # pin@main
         with:
-          pr-title: "build: update flake.lock" # Title of PR to be created
-          pr-labels: | # Labels to be set on the PR
-            dependencies
-            automated
+          pr-title: "build: update flake.lock"
+          pr-labels: |
+            build
+            bot
