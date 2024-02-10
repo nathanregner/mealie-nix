@@ -1,11 +1,13 @@
-{ inputs, mealie, python311Packages, pkgs, ... }:
+{ inputs, mealie, python3, pkgs, ... }:
 let
   inherit (inputs.poetry2nix.lib.mkPoetry2Nix { inherit pkgs; })
     mkPoetryApplication defaultPoetryOverrides;
+  pythonPkgs = python3.pkgs;
 
 in mkPoetryApplication {
   inherit (mealie) version meta;
   projectDir = mealie.src;
+  inherit python3;
 
   patches = [
     # patch alembic paths so DB migrations are runnable from the site-package installation
@@ -24,7 +26,7 @@ in mkPoetryApplication {
     (let
       dummy = super.buildPythonPackage {
         pname = "dummy";
-        version = "0.0.0";
+        version = "0.2.1";
         dontUnpack = true;
         doCheck = false;
         format = "other";
@@ -36,17 +38,19 @@ in mkPoetryApplication {
       ruff = dummy; # linter
       mypy = dummy; # type checker
 
+      # complains about mismatched cargoVendorHash... just use nixpkgs version for now
+      inherit (pythonPkgs) orjson;
+
       pyrdfa3 = super.pyrdfa3.overrideAttrs (old: {
         # this package is dead
         # steal nixpkgs patches that fix the build
-        inherit (python311Packages.pyrdfa3) patches postPatch;
+        inherit (pythonPkgs.pyrdfa3) patches postPatch;
       });
 
       pytesseract = super.pytesseract.overrideAttrs (old: {
         # steal nixpkgs patches that include the tesseract package
-        inherit (python311Packages.pytesseract) patches;
-        buildInputs = old.buildInputs
-          ++ python311Packages.pytesseract.buildInputs;
+        inherit (pythonPkgs.pytesseract) patches;
+        buildInputs = old.buildInputs ++ pythonPkgs.pytesseract.buildInputs;
       });
     }) // (let
       pypkgs-build-requirements = {
