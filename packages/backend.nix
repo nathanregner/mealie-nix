@@ -35,11 +35,13 @@ in mkPoetryApplication {
       # these packages are not building properly... but they're not needed at runtime
       coveragepy-lcov = dummy; # test coverage
       mkdocs-material = dummy; # static doc generation
-      ruff = dummy; # linter
       mypy = dummy; # type checker
+      ruff = dummy; # linter
 
       # complains about mismatched cargoVendorHash... just use nixpkgs version for now
       inherit (pythonPkgs) orjson;
+
+      inherit (pythonPkgs) lxml rapidfuzz;
 
       pyrdfa3 = super.pyrdfa3.overrideAttrs (old: {
         # this package is dead
@@ -57,13 +59,14 @@ in mkPoetryApplication {
         apprise = [
           "babel" # fixes a timeout when running setuptools... why does this work?
         ];
+        beautifulsoup4 = [ "hatchling" ];
         html-text = [ "setuptools" ];
         jstyleson = [ "setuptools" ];
         mf2py = [ "setuptools" ];
+        paho-mqtt = [ "hatchling" ];
         pydantic-to-typescript = [ "setuptools" ];
         recipe-scrapers = [ "setuptools-scm" ];
         types-python-slugify = [ "setuptools" ];
-        beautifulsoup4 = [ "hatchling" ];
       };
     in builtins.mapAttrs (package: build-requirements:
       (builtins.getAttr package super).overridePythonAttrs (old: {
