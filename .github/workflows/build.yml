@@ -9,8 +9,8 @@ jobs:
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # pin@v3
       - uses: DeterminateSystems/nix-installer-action@e279ba56d8266c08a0e65738145aabb824f308ed # pin@main
-      - uses: DeterminateSystems/magic-nix-cache-action@eeabdb06718ac63a7021c6132129679a8e22d0c7 # pin@main
-      - uses: DeterminateSystems/flake-checker-action@f0e5653c10c32d915bbb456e6df734ebb04a06bd # pin@main
+      - uses: DeterminateSystems/magic-nix-cache-action@122e91d3464f7a0985c87c9639b08aa5d9160b31 # pin@main
+      - uses: DeterminateSystems/flake-checker-action@17d9279de7f9bd959209d0b30ba7a04773141217 # pin@main
       - uses: cachix/cachix-action@6a9a34cdd93d0ae4b4b59fd678660efb08109f2f # pin@v12
         with:
           name: nathanregner-mealie-nix
