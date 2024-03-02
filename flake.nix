@@ -44,7 +44,7 @@
         };
 
       checks.vm = { inputs, inputs', outputs, outputs', pkgs, lib, ... }:
-        let nixos-lib = import (inputs.nixpkgs + "/nixos/lib") { };
+        let nixos-lib = import "${inputs.nixpkgs}/nixos/lib" { };
         in nixos-lib.runTest {
           imports = [ ./vm.nix ];
           hostPkgs = pkgs;

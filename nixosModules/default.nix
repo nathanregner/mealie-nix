@@ -1,8 +1,8 @@
 { config, lib, pkgs, ... }:
 with lib;
-let cfg = config.services.mealie;
+let cfg = config.services.mealie-nightly;
 in {
-  options.services.mealie = {
+  options.services.mealie-nightly = {
     enable = mkEnableOption
       (lib.mdDoc "A self-hosted recipe manager and meal planner");
 
@@ -57,7 +57,7 @@ in {
     systemd.tmpfiles.rules =
       [ "d '${cfg.stateDir}' - ${cfg.user} ${cfg.group} - -" ];
 
-    systemd.services.mealie = {
+    systemd.services.mealie-nightly = {
       description = "A self-hosted recipe manager and meal planner";
       wantedBy = [ "multi-user.target" ];
       after = [ "network.target" ];

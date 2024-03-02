@@ -29,7 +29,7 @@ Enable the service in your nixosConfiguration:
   nixpkgs.overlays = [ inputs.mealie.overlays.default ];
 
   # alternatively, specify the package explicitly:
-  # services.mealie.package = inputs.mealie.packages.mealie;
+  # services.mealie-nightly.package = inputs.mealie.packages.mealie;
 }
 ```
 
