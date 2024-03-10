@@ -3,14 +3,13 @@ name: Build
 on:
   push:
 
-
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # pin@v3
       - uses: DeterminateSystems/nix-installer-action@e279ba56d8266c08a0e65738145aabb824f308ed # pin@main
-      - uses: DeterminateSystems/magic-nix-cache-action@122e91d3464f7a0985c87c9639b08aa5d9160b31 # pin@main
+      # - uses: DeterminateSystems/magic-nix-cache-action@122e91d3464f7a0985c87c9639b08aa5d9160b31 # pin@main
       - uses: cachix/cachix-action@7482e945cd612f00f2a68a960ec8f2ce1c38c55e # pin@master
         with:
           name: nathanregner-mealie-nix
