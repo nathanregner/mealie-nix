@@ -1,8 +1,10 @@
+# GH_ADMIN_TOKEN=$(gh auth token) pin-github-action .github/workflows/build.yml
 { buildNpmPackage, fetchFromGitHub }:
 buildNpmPackage rec {
   pname = src.repo;
   version = src.rev;
 
+  # https://github.com/mheap/pin-github-action
   src = fetchFromGitHub {
     owner = "mheap";
     repo = "pin-github-action";
