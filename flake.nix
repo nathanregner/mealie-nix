@@ -6,14 +6,6 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
-    nix-github-actions = {
-      url = "github:nix-community/nix-github-actions";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    flakelight = {
-      url = "github:accelbread/flakelight";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
 
     mealie = {
       url = "github:mealie-recipes/mealie?ref=mealie-next";
@@ -25,38 +17,65 @@
     };
   };
 
-  outputs = inputs@{ self, flakelight, nixpkgs, ... }:
-    flakelight ./. {
-      inherit inputs;
-
-      packages.mealie = import ./packages/mealie.nix;
+  outputs = inputs@{ self, nixpkgs, ... }:
+    let
+      inherit (nixpkgs) lib;
+      forAllSystems = lib.genAttrs [
+        "aarch64-darwin"
+        "aarch64-linux"
+        "i686-linux"
+        "x86_64-darwin"
+        "x86_64-linux"
+      ];
+      forAllSupportedSystems = lib.genAttrs [ "x86_64-linux" ];
+    in {
+      packages = forAllSystems (system:
+        let pkgs = nixpkgs.legacyPackages.${system};
+        in rec {
+          mealie-nightly =
+            pkgs.callPackage ./packages/mealie.nix { inherit inputs; };
+          default = mealie-nightly;
+        });
 
       nixosModules.default = ./nixosModules;
 
-      formatters = { "*.nix" = nixpkgs.lib.mkForce "nixfmt"; };
+      overlays.default = (final: prev: {
+        mealie-nightly = self.packages.${final.system}.mealie-nightly;
+      });
 
-      devShells.default = { pkgs }:
-        pkgs.mkShell {
-          packages = with pkgs; [
-            nixfmt
-            (pkgs.callPackage ./packages/shell/pin-github-action.nix { })
-          ];
-        };
-
-      checks.vm = { inputs, inputs', outputs, outputs', pkgs, lib, ... }:
-        let nixos-lib = import "${inputs.nixpkgs}/nixos/lib" { };
-        in nixos-lib.runTest {
-          imports = [ ./vm.nix ];
-          hostPkgs = pkgs;
-          node.specialArgs = { inherit outputs outputs'; };
-        };
-
-      outputs = {
-        githubActions = inputs.nix-github-actions.lib.mkGithubMatrix {
-          checks.x86_64-linux = {
-            inherit (self.checks.x86_64-linux) formatting vm;
+      devShells = forAllSystems (system:
+        let pkgs = nixpkgs.legacyPackages.${system};
+        in {
+          default = pkgs.mkShell {
+            packages = [
+              pkgs.nixfmt
+              (pkgs.callPackage ./packages/shell/pin-github-action.nix { })
+            ];
           };
-        };
-      };
+        });
+
+      checks = forAllSupportedSystems (system:
+        let
+          pkgs = import nixpkgs {
+            inherit system;
+            overlays = [ self.overlays.default ];
+          };
+        in {
+          vm = pkgs.testers.runNixOSTest {
+            name = "service-startup";
+
+            nodes.machine = { ... }: {
+              imports = [ self.outputs.nixosModules.default ];
+              services.mealie-nightly.enable = true;
+            };
+
+            testScript = ''
+              machine.start()
+
+              machine.wait_for_unit("mealie-nightly.service")
+              machine.wait_until_succeeds("curl http://localhost:9000/api/app/about", timeout=30)
+            '';
+          };
+        });
     };
 }
