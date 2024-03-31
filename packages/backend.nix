@@ -1,12 +1,12 @@
-{ inputs, mealie, python3, pkgs, ... }:
+{ inputs, mealie-nightly, python3, pkgs, ... }:
 let
   inherit (inputs.poetry2nix.lib.mkPoetry2Nix { inherit pkgs; })
     mkPoetryApplication defaultPoetryOverrides;
   pythonPkgs = python3.pkgs;
 
 in mkPoetryApplication {
-  inherit (mealie) version meta;
-  projectDir = mealie.src;
+  inherit (mealie-nightly) version meta;
+  projectDir = mealie-nightly.src;
   inherit python3;
 
   patches = [

@@ -1,15 +1,15 @@
 { inputs, lib, callPackage, writeShellApplication, }:
 let
-  mealie = {
+  mealie-nightly = rec {
     src = inputs.mealie;
-    version = inputs.mealie.rev;
+    version = src.rev;
     meta = with lib; {
       homepage = "https://nightly.mealie.io/";
       license = licenses.agpl3Only;
     };
   };
-  frontend = callPackage ./frontend.nix { inherit mealie; };
-  backend = callPackage ./backend.nix { inherit mealie; };
+  frontend = callPackage ./frontend.nix { inherit mealie-nightly; };
+  backend = callPackage ./backend.nix { inherit inputs mealie-nightly; };
 in (writeShellApplication {
   name = "start";
 

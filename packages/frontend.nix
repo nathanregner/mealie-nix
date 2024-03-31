@@ -1,8 +1,8 @@
-{ mealie, mkYarnPackage, ... }:
+{ mealie-nightly, mkYarnPackage, ... }:
 mkYarnPackage {
-  inherit (mealie) version meta;
+  inherit (mealie-nightly) version meta;
   pname = "mealie-nightly-frontend";
-  src = "${mealie.src}/frontend";
+  src = "${mealie-nightly.src}/frontend";
 
   configurePhase = ''
     runHook preConfigure

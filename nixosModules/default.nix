@@ -9,7 +9,7 @@ in {
     package = mkOption {
       type = types.package;
       description = lib.mdDoc "Mealie package to be used in the module";
-      default = pkgs.mealie;
+      default = pkgs.mealie-nightly;
     };
 
     stateDir = mkOption {
