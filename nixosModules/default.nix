@@ -1,3 +1,4 @@
+self:
 { config, lib, pkgs, ... }:
 with lib;
 let cfg = config.services.mealie-nightly;
@@ -9,7 +10,7 @@ in {
     package = mkOption {
       type = types.package;
       description = lib.mdDoc "Mealie package to be used in the module";
-      default = pkgs.mealie-nightly;
+      default = self.packages.${pkgs.system}.mealie-nightly;
     };
 
     stateDir = mkOption {

@@ -37,7 +37,7 @@
           default = mealie-nightly;
         });
 
-      nixosModules.default = ./nixosModules;
+      nixosModules.default = import ./nixosModules self.outputs;
 
       overlays.default = (final: prev: {
         mealie-nightly = self.packages.${final.system}.mealie-nightly;

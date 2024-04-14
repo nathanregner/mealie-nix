@@ -25,12 +25,6 @@ Enable the service in your nixosConfiguration:
   imports = [ inputs.mealie.nixosModules.default ];
 
   services.mealie-nightly.enable = true;
-
-  # overlay the `mealie` package:
-  nixpkgs.overlays = [ inputs.mealie.overlays.default ];
-
-  # alternatively, specify the package explicitly:
-  # services.mealie-nightly.package = inputs.mealie.packages.mealie-nightly;
 }
 ```
 
