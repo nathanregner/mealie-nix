@@ -38,10 +38,10 @@ in mkPoetryApplication {
       mypy = dummy; # type checker
       ruff = dummy; # linter
 
-      # complains about mismatched cargoVendorHash... just use nixpkgs version for now
-      inherit (pythonPkgs) orjson;
-
-      inherit (pythonPkgs) lxml rapidfuzz;
+      inherit (pythonPkgs)
+        lxml
+        orjson # complains about mismatched cargoVendorHash... just use nixpkgs version for now
+        pillow pillow-heif rapidfuzz;
 
       pyrdfa3 = super.pyrdfa3.overrideAttrs (old: {
         # this package is dead
