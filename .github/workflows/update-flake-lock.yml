@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017 # pin@main
-      - uses: DeterminateSystems/nix-installer-action@de22e16c4711fca50c816cc9081563429d1cf563 # pin@main
+      - uses: DeterminateSystems/nix-installer-action@5c49fa4feb9cc164719a4e7df4b56065cc9e4a91 # pin@main
         with:
           nix-installer-tag: v0.16.1 # https://github.com/DeterminateSystems/nix-installer/tags
-      - uses: DeterminateSystems/magic-nix-cache-action@fc6aaceb40b9845a02b91e059ec147e78d1b4e41 # pin@main
-      - uses: DeterminateSystems/update-flake-lock@a3ccb8f59719c48d6423e97744560221bcf7a3fa # pin@main
+      - uses: DeterminateSystems/magic-nix-cache-action@5e58ce0108de7f4baaa8a0879e6db6fe4d8c8fe7 # pin@main
+      - uses: DeterminateSystems/update-flake-lock@cc5f0647496bde16c80c785160d9b2609482b93a # pin@main
         with:
           pr-title: "build: update flake.lock"
           pr-labels: |
