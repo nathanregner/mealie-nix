@@ -18,34 +18,14 @@
         "type": "github"
       }
     },
-    "flakelight": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1711369763,
-        "narHash": "sha256-uktuk4hOzJbEQ3lrzq4nxhvSdyyA8JqIGLsdnEwEQ0Y=",
-        "owner": "accelbread",
-        "repo": "flakelight",
-        "rev": "3150ee13375ff4f7e9403bafc4ea02230875c968",
-        "type": "github"
-      },
-      "original": {
-        "owner": "accelbread",
-        "repo": "flakelight",
-        "type": "github"
-      }
-    },
     "mealie": {
       "flake": false,
       "locked": {
-        "lastModified": 1711837986,
-        "narHash": "sha256-EfqjzxAw7s+solpILx/R0GiP6xLikeWinObdtk5a3MA=",
+        "lastModified": 1713547881,
+        "narHash": "sha256-UgZmXnDQHL9/4tcQhfDK468pXzAQd/RoVYbcmqPsd30=",
         "owner": "mealie-recipes",
         "repo": "mealie",
-        "rev": "e280734e33ebd2601f058ee2ae477181c04da9a9",
+        "rev": "e6bf3b3acd23b2b9253d2453550149a1272f3019",
         "type": "github"
       },
       "original": {
@@ -78,11 +58,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1711668574,
-        "narHash": "sha256-u1dfs0ASQIEr1icTVrsKwg2xToIpn7ZXxW3RHfHxshg=",
+        "lastModified": 1713564160,
+        "narHash": "sha256-YguPZpiejgzLEcO36/SZULjJQ55iWcjAmf3lYiyV1Fo=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "219951b495fc2eac67b1456824cc1ec1fd2ee659",
+        "rev": "bc194f70731cc5d2b046a6c1b3b15f170f05999c",
         "type": "github"
       },
       "original": {
