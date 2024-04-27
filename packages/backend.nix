@@ -6,7 +6,12 @@ let
 
 in mkPoetryApplication {
   inherit (mealie-nightly) version meta;
-  projectDir = mealie-nightly.src;
+  # make projectSource a derivation to avoid infinite recursion in `findGitIgnores` on nix 2.20+
+  # https://github.com/nix-community/poetry2nix/blob/master/default.nix#L370
+  # https://github.com/NixOS/nix/issues/9672
+  projectDir = pkgs.runCommand "mealie-source" { } ''
+    cp -r ${mealie-nightly.src} $out
+  '';
   inherit python3;
 
   patches = [
