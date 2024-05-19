@@ -1,9 +1,8 @@
-{ inputs, mealie-nightly, python3, pkgs, ... }:
+{ inputs, mealie-nightly, python3, pkgs, lib, ... }:
 let
   inherit (inputs.poetry2nix.lib.mkPoetry2Nix { inherit pkgs; })
     mkPoetryApplication defaultPoetryOverrides;
   pythonPkgs = python3.pkgs;
-
 in mkPoetryApplication {
   inherit (mealie-nightly) version meta;
   # make projectSource a derivation to avoid infinite recursion in `findGitIgnores` on nix 2.20+
@@ -36,17 +35,35 @@ in mkPoetryApplication {
         doCheck = false;
         format = "other";
       };
+
+      patchCargoVendorHash = drv: version: hash:
+        drv.overridePythonAttrs (old:
+          assert lib.assertMsg (old.version == version)
+            "patchCargoVendorHash version mismatch: ${old.version} != ${version}"; {
+              cargoDeps = pkgs.rustPlatform.fetchCargoTarball {
+                inherit (old) src;
+                name = "${old.pname}-${old.version}";
+                inherit hash;
+              };
+            });
     in {
+      cython_0 = null;
+
       # these packages are not building properly... but they're not needed at runtime
       coveragepy-lcov = dummy; # test coverage
       mkdocs-material = dummy; # static doc generation
       mypy = dummy; # type checker
       ruff = dummy; # linter
 
-      inherit (pythonPkgs)
-        lxml
-        orjson # complains about mismatched cargoVendorHash... just use nixpkgs version for now
-        pillow pillow-heif rapidfuzz;
+      # use nixpkgs version to work around error
+      # pillow_heif/_pillow_heif.c:1316:21: error: incompatible types when assigning to type ‘struct heif_error’ from type ‘int’
+      inherit (pythonPkgs) pillow pillow-heif;
+
+      bcrypt = patchCargoVendorHash super.bcrypt "4.1.3"
+        "sha256-Uag1pUuis5lpnus2p5UrMLa4HP7VQLhKxR5TEMfpK0s=";
+
+      watchfiles = patchCargoVendorHash super.watchfiles "0.18.1"
+        "sha256-IWONA3o+2emJ7cKEw5xYSMdWzGuUSwn1B70zUDzj7Cw=";
 
       pyrdfa3 = super.pyrdfa3.overrideAttrs (old: {
         # this package is dead
