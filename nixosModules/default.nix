@@ -1,11 +1,17 @@
 self:
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 with lib;
-let cfg = config.services.mealie-nightly;
-in {
+let
+  cfg = config.services.mealie-nightly;
+in
+{
   options.services.mealie-nightly = {
-    enable = mkEnableOption
-      (lib.mdDoc "A self-hosted recipe manager and meal planner");
+    enable = mkEnableOption (lib.mdDoc "A self-hosted recipe manager and meal planner");
 
     package = mkOption {
       type = types.package;
@@ -55,8 +61,7 @@ in {
 
     users.groups = optionalAttrs (cfg.group == "mealie") { mealie = { }; };
 
-    systemd.tmpfiles.rules =
-      [ "d '${cfg.stateDir}' - ${cfg.user} ${cfg.group} - -" ];
+    systemd.tmpfiles.rules = [ "d '${cfg.stateDir}' - ${cfg.user} ${cfg.group} - -" ];
 
     systemd.services.mealie-nightly = {
       description = "A self-hosted recipe manager and meal planner";
@@ -69,9 +74,7 @@ in {
       };
 
       script = ''
-        ${cfg.package}/bin/start --host ${cfg.address} --port ${
-          toString cfg.port
-        }
+        ${cfg.package}/bin/start --host ${cfg.address} --port ${toString cfg.port}
       '';
 
       serviceConfig = {

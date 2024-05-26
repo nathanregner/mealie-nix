@@ -21,7 +21,8 @@ Add an input to your flake:
 Enable the service in your nixosConfiguration:
 
 ```nix
-{ inputs, ... }: {
+{ inputs, ... }:
+{
   imports = [ inputs.mealie.nixosModules.default ];
 
   services.mealie-nightly.enable = true;
@@ -32,7 +33,8 @@ Optionally, enable use of the publicly available [Cachix binary
 cache](https://app.cachix.org/cache/nathanregner-mealie-nix):
 
 ```nix
-{ ... }: {
+{ ... }:
+{
   nix = {
     settings = {
       substituters = [ "https://nathanregner-mealie-nix.cachix.org" ];
