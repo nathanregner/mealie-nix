@@ -1,4 +1,9 @@
-{ inputs, lib, callPackage, writeShellApplication, }:
+{
+  inputs,
+  lib,
+  callPackage,
+  writeShellApplication,
+}:
 let
   mealie-nightly = rec {
     src = inputs.mealie;
@@ -10,7 +15,8 @@ let
   };
   frontend = callPackage ./frontend.nix { inherit mealie-nightly; };
   backend = callPackage ./backend.nix { inherit inputs mealie-nightly; };
-in (writeShellApplication {
+in
+(writeShellApplication {
   name = "start";
 
   runtimeInputs = [ backend.dependencyEnv ];
@@ -21,7 +27,9 @@ in (writeShellApplication {
     STATIC_FILES="${frontend}" \
     uvicorn mealie.app:app "$@"
   '';
-}) // {
-  passthru = { inherit frontend backend; };
+})
+// {
+  passthru = {
+    inherit frontend backend;
+  };
 }
-

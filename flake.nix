@@ -6,6 +6,11 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     mealie = {
       url = "github:mealie-recipes/mealie?ref=mealie-next";
@@ -17,65 +22,65 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, ... }:
-    let
-      inherit (nixpkgs) lib;
-      forAllSystems = lib.genAttrs [
-        "aarch64-darwin"
+  outputs =
+    inputs@{ self, flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [
         "aarch64-linux"
-        "i686-linux"
-        "x86_64-darwin"
         "x86_64-linux"
+        "aarch64-darwin"
       ];
-      forAllSupportedSystems = lib.genAttrs [ "x86_64-linux" ];
-    in {
-      packages = forAllSystems (system:
-        let pkgs = nixpkgs.legacyPackages.${system};
-        in rec {
-          mealie-nightly =
-            pkgs.callPackage ./packages/mealie.nix { inherit inputs; };
-          default = mealie-nightly;
-        });
+      imports = [ inputs.treefmt-nix.flakeModule ];
 
-      nixosModules.default = import ./nixosModules self.outputs;
-
-      overlays.default = (final: prev: {
-        mealie-nightly = self.packages.${final.system}.mealie-nightly;
-      });
-
-      devShells = forAllSystems (system:
-        let pkgs = nixpkgs.legacyPackages.${system};
-        in {
-          default = pkgs.mkShell {
-            packages = [
-              pkgs.nixfmt
-              (pkgs.callPackage ./packages/shell/pin-github-action.nix { })
-            ];
+      perSystem =
+        {
+          config,
+          system,
+          inputs',
+          pkgs,
+          ...
+        }:
+        {
+          packages = rec {
+            mealie-nightly = pkgs.callPackage ./packages/mealie.nix { inherit inputs; };
+            default = mealie-nightly;
           };
-        });
 
-      checks = forAllSupportedSystems (system:
-        let
-          pkgs = import nixpkgs {
-            inherit system;
-            overlays = [ self.overlays.default ];
-          };
-        in {
-          vm = pkgs.testers.runNixOSTest {
-            name = "service-startup";
-
-            nodes.machine = { ... }: {
-              imports = [ self.outputs.nixosModules.default ];
-              services.mealie-nightly.enable = true;
+          devShells = {
+            default = pkgs.mkShell {
+              packages = [
+                pkgs.nixfmt
+                config.treefmt.build.wrapper
+              ];
             };
-
-            testScript = ''
-              machine.start()
-
-              machine.wait_for_unit("mealie-nightly.service")
-              machine.wait_until_succeeds("curl http://localhost:9000/api/app/about", timeout=30)
-            '';
           };
-        });
+
+          treefmt = import ./treefmt.nix { inherit pkgs; };
+
+          checks = {
+            vm = pkgs.testers.runNixOSTest {
+              name = "service-startup";
+
+              nodes.machine =
+                { ... }:
+                {
+                  imports = [ self.outputs.nixosModules.default ];
+                  services.mealie-nightly.enable = true;
+                };
+
+              testScript = ''
+                machine.start()
+
+                machine.wait_for_unit("mealie-nightly.service")
+                machine.wait_until_succeeds("curl http://localhost:9000/api/app/about", timeout=30)
+              '';
+            };
+          };
+        };
+      flake = {
+        nixosModules.default = import ./nixosModules self.outputs;
+
+        overlays.default = (final: prev: { inherit (self.packages.${final.system}) mealie-nightly; });
+      };
     };
 }
