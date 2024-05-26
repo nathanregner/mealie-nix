@@ -88,7 +88,23 @@ mkPoetryApplication {
         pyrdfa3 = super.pyrdfa3.overrideAttrs (old: {
           # this package is dead
           # steal nixpkgs patches that fix the build
-          inherit (pythonPkgs.pyrdfa3) patches postPatch;
+          patches = [
+            (pkgs.fetchpatch {
+              # https://github.com/RDFLib/pyrdfa3/pull/40
+              name = "CVE-2022-4396.patch";
+              url = "https://github.com/RDFLib/pyrdfa3/commit/ffd1d62dd50d5f4190013b39cedcdfbd81f3ce3e.patch";
+              hash = "sha256-prRrOwylYcEqKLr/8LIpyJ5Yyt+6+HTUqH5sQXU8tqc=";
+            })
+          ];
+
+          postPatch = ''
+            substituteInPlace setup.py \
+              --replace "'html = pyRdfa.rdflibparsers:StructuredDataParser'" "'html = pyRdfa.rdflibparsers:StructuredDataParser'," \
+              --replace "'hturtle = pyRdfa.rdflibparsers:HTurtleParser'" "'hturtle = pyRdfa.rdflibparsers:HTurtleParser',"
+            # https://github.com/RDFLib/pyrdfa3/issues/31
+            substituteInPlace pyRdfa/utils.py \
+              --replace "imp," ""
+          '';
         });
 
         pytesseract = super.pytesseract.overrideAttrs (old: {
